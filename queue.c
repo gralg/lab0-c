@@ -199,8 +199,7 @@ void q_reverse(queue_t *q)
  * No effect if q is NULL or empty. In addition, if q has only one
  * element, do nothing.
  */
-list_ele_t *merge(list_ele_t *l1, list_ele_t *l2);
-list_ele_t *mergeSort(list_ele_t *head);
+void mergeSort(list_ele_t **head);
 void q_sort(queue_t *q)
 {
     /* TODO: You need to write the code for this function */
@@ -208,38 +207,40 @@ void q_sort(queue_t *q)
     if (q == NULL || q->size == 0 || q->size == 1) {
         return;
     }
-    q->head = mergeSort(q->head);
+    mergeSort(&q->head);
     while (q->tail->next) {
         q->tail = q->tail->next;
     }
 }
-list_ele_t *merge(list_ele_t *l1, list_ele_t *l2)
+
+void mergeSort(list_ele_t **head)
 {
-    if (!l2)
-        return l1;
-    if (!l1)
-        return l2;
-    if (strcmp(l1->value, l2->value) < 0) {
-        l1->next = merge(l1->next, l2);
-        return l1;
-    } else {
-        l2->next = merge(l2->next, l1);
-        return l2;
+    if (!*head || !(*head)->next)
+        return;
+    list_ele_t *l1 = (*head)->next;
+    list_ele_t *l2 = (*head);
+    while (l1 && l1->next) {
+        l2 = l2->next;
+        l1 = l1->next->next;
     }
-}
-list_ele_t *mergeSort(list_ele_t *head)
-{
-    if (!head || !head->next)
-        return head;
-    list_ele_t *fast = head->next;
-    list_ele_t *slow = head;
-    while (fast && fast->next) {
-        slow = slow->next;
-        fast = fast->next->next;
+    l1 = l2->next;
+    l2->next = NULL;
+    l2 = *head;
+
+    mergeSort(&l1);
+    mergeSort(&l2);
+
+    *head = NULL;
+    list_ele_t **cur = head;
+    while (l1 && l2) {
+        if (strcmp(l1->value, l2->value) < 0) {
+            *cur = l1;
+            l1 = l1->next;
+        } else {
+            *cur = l2;
+            l2 = l2->next;
+        }
+        cur = &(*cur)->next;
     }
-    fast = slow->next;
-    slow->next = NULL;
-    list_ele_t *l1 = mergeSort(head);
-    list_ele_t *l2 = mergeSort(fast);
-    return merge(l1, l2);
+    *cur = l1 ? l1 : l2;
 }
