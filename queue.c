@@ -54,14 +54,7 @@ bool q_insert_head(queue_t *q, char *s)
     if (!q) {
         return false;
     }
-    // newh = malloc(sizeof(list_ele_t));
-    // while (!newh) {
-    //     newh = malloc(sizeof(list_ele_t));
-    // }
-    // newstr = malloc(sizeof(char) * len + 1);
-    // while (!newstr) {
-    //     newstr = malloc(sizeof(char) * len + 1);
-    // }
+
     newh = malloc(sizeof(list_ele_t));
     if (!newh) {
         return false;
