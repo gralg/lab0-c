@@ -31,7 +31,7 @@ void q_free(queue_t *q)
         return;
     for (list_ele_t *indirect = q->head; indirect != NULL;) {
         free(indirect->value);
-        next = (indirect)->next;
+        next = indirect->next;
         free(indirect);
         indirect = next;
     }
@@ -54,13 +54,22 @@ bool q_insert_head(queue_t *q, char *s)
     if (!q) {
         return false;
     }
+    // newh = malloc(sizeof(list_ele_t));
+    // while (!newh) {
+    //     newh = malloc(sizeof(list_ele_t));
+    // }
+    // newstr = malloc(sizeof(char) * len + 1);
+    // while (!newstr) {
+    //     newstr = malloc(sizeof(char) * len + 1);
+    // }
     newh = malloc(sizeof(list_ele_t));
-    while (!newh) {
-        newh = malloc(sizeof(list_ele_t));
+    if (!newh) {
+        return false;
     }
     newstr = malloc(sizeof(char) * len + 1);
-    while (!newstr) {
-        newstr = malloc(sizeof(char) * len + 1);
+    if (!newstr) {
+        free(newh);
+        return false;
     }
     for (int i = 0; i < len; i++) {
         *(newstr + i) = *(s + i);
@@ -95,12 +104,13 @@ bool q_insert_tail(queue_t *q, char *s)
     if (!q)
         return false;
     newt = malloc(sizeof(list_ele_t));
-    while (!newt) {
-        newt = malloc(sizeof(list_ele_t));
+    if (!newt) {
+        return false;
     }
     newstr = malloc(sizeof(char) * len + 1);
-    while (!newstr) {
-        newstr = malloc(sizeof(char) * len + 1);
+    if (!newstr) {
+        free(newt);
+        return false;
     }
     for (int i = 0; i < len; i++) {
         *(newstr + i) = *(s + i);
