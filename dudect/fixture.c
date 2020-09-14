@@ -69,6 +69,7 @@ static void differentiate(int64_t *exec_times,
 
 static void update_statistics(int64_t *exec_times, uint8_t *classes)
 {
+    t_mean(t, exec_times, classes);
     for (size_t i = 0; i < number_measurements; i++) {
         int64_t difference = exec_times[i];
         /* Cpu cycle counter overflowed or dropped measurement */

@@ -15,17 +15,28 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+extern const size_t number_measurements;
 void t_push(t_ctx *ctx, double x, uint8_t class)
 {
     assert(class == 0 || class == 1);
-    ctx->n[class]++;
+    // ctx->n[class]++;
     /* Welford method for computing online variance
      * in a numerically stable way.
      */
     double delta = x - ctx->mean[class];
-    ctx->mean[class] = ctx->mean[class] + delta / ctx->n[class];
-    ctx->m2[class] = ctx->m2[class] + delta * (x - ctx->mean[class]);
+    // ctx->mean[class] = ctx->mean[class] + delta / ctx->n[class];
+    ctx->m2[class] = ctx->m2[class] + delta * delta /*(x - ctx->mean[class])*/;
+}
+/*Use t_mean to calculate the "correct" mean for total sum */
+void t_mean(t_ctx *ctx, int64_t *exec_times, uint8_t *classes)
+{
+    for (size_t i = 0; i < number_measurements; i++) {
+        assert(classes[i] == 0 || classes[i] == 1);
+        ctx->n[classes[i]]++;
+        ctx->sum[classes[i]] += exec_times[i];
+    }
+    ctx->mean[0] = ctx->sum[0] / ctx->n[0];
+    ctx->mean[1] = ctx->sum[1] / ctx->n[1];
 }
 
 double t_compute(t_ctx *ctx)
@@ -42,6 +53,7 @@ double t_compute(t_ctx *ctx)
 void t_init(t_ctx *ctx)
 {
     for (int class = 0; class < 2; class ++) {
+        ctx->sum[class] = 0.0;
         ctx->mean[class] = 0.0;
         ctx->m2[class] = 0.0;
         ctx->n[class] = 0.0;
